@@ -60,7 +60,11 @@ abstract class Creature(
 
     private fun applyDamage(damage: Int) {
         currentHealth = (currentHealth - damage).coerceAtLeast(0)
-        println("$name took $damage damage. HP: $currentHealth/$maxHealth.")
+        if (isAlive) {
+            println("$name took $damage damage. HP: $currentHealth/$maxHealth.")
+        } else {
+            println("$name has fallen in battle!")
+        }
     }
 
     companion object {

@@ -12,31 +12,28 @@ class Game(
     fun launch() {
         println("=== Battle Start ===")
         var round = 1
+        val participants = (monsters + player).toMutableList()
         while (player.isAlive && monsters.any { it.isAlive }) {
             println("--- Round $round ---")
-            val participants = (monsters + player).filter { it.isAlive }.toMutableList()
             participants.shuffle(random)
             var turn = 1
             for (creature in participants) {
-                processTurn(creature, round, turn)
+                if (!creature.isAlive) continue
+                val enemies = if (creature == player) {
+                    monsters.filter { it.isAlive }
+                } else {
+                    listOf(player).filter { it.isAlive }
+                }
+                if (enemies.isEmpty()) break
+                println("[Round $round | Turn $turn] ${creature.name}'s turn")
+                creature.takeTurn(enemies)
+                logHealthStatus()
                 turn++
             }
             round++
         }
         println("=== Battle End ===")
         announceWinner()
-    }
-
-    private fun processTurn(creature: Creature, round: Int, turn: Int) {
-        val enemies = if (creature == player) {
-            monsters.filter { it.isAlive }
-        } else {
-            listOf(player).filter { it.isAlive }
-        }
-        if (enemies.isEmpty()) return
-        println("[Round $round | Turn $turn] ${creature.name}'s turn")
-        creature.takeTurn(enemies)
-        logHealthStatus()
     }
 
     private fun logHealthStatus() {
